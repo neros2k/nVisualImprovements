@@ -1,0 +1,6 @@
+name: nVisualImprovements
+version: '${project.version}'
+main: n2k_.nvi.nVisualImprovements
+api-version: 1.17
+authors: [ n2k_ ]
+website: github.com/neros2k/nVisualImprovements
