@@ -16,9 +16,10 @@ public class TNTListener extends APresenter implements Listener {
     }
     @EventHandler
     public void onTntExplosion(@NotNull EntityExplodeEvent EVENT) {
+        EVENT.setCancelled(true);
         Bukkit.getScheduler().runTaskLaterAsynchronously(super.getPlugin(), () -> {
             new BlastWave(EVENT.getLocation(), 10, super.getPlugin()).start();
-            new ExplosiveLine(EVENT.getLocation(), 6).start();
+            new ExplosiveLine(EVENT.getLocation(), 5).start();
         }, 1L);
     }
 }

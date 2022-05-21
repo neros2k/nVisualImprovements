@@ -4,11 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 public class BlastWave {
     private final Location LOCATION;
     private final int RADIUS;
@@ -33,14 +31,6 @@ public class BlastWave {
                                 Particle.CAMPFIRE_COSY_SMOKE, LOCATION,
                                 1, 0, 1, 0, 0.005
                         );
-                    } else {
-                        if(new Random().nextInt(100) > 95) {
-                            Vector VECTOR = this.LOCATION.toVector().subtract(LOCATION.toVector()).multiply(-1);
-                            WORLD.spawnParticle(
-                                    Particle.CAMPFIRE_COSY_SMOKE, LOCATION,
-                                    1, VECTOR.getX(), VECTOR.getY(), VECTOR.getZ(), 0.005
-                            );
-                        }
                     }
                 });
                 try {

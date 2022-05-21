@@ -3,6 +3,7 @@ import org.bukkit.*;
 import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 public class ExplosiveLine {
     private final Location LOCATION;
     private final int RADIUS;
@@ -33,6 +34,7 @@ public class ExplosiveLine {
         return CHECKED_POINT_LIST;
     }
     public boolean draw(Location POINT, World WORLD, boolean VISUAL) {
+        Random RANDOM = new Random();
         double DISTANCE = this.LOCATION.distance(POINT);
         if(VISUAL && this.SURCHARGE_AMOUNT != 0 && this.STRENGTH_SURCHARGE != 0) {
             DISTANCE+=(this.STRENGTH_SURCHARGE/this.SURCHARGE_AMOUNT)/20.5;
@@ -41,48 +43,54 @@ public class ExplosiveLine {
         Vector POINT2_VECTOR = POINT.toVector();
         Vector VECTOR = POINT2_VECTOR.clone().subtract(POINT1_VECTOR).normalize().multiply(0.1);
         double LENGHT = 0;
+        boolean SHRAPNEL = false;
+        boolean SMOKE = false;
+        if(VISUAL) {
+            if(RANDOM.nextInt(100) > 70) {
+                SMOKE = true;
+                DISTANCE/=2;
+            } else if(RANDOM.nextInt(100) > 60) {
+                SHRAPNEL = true;
+                DISTANCE*=2;
+            }
+        }
         for(;LENGHT < DISTANCE;POINT1_VECTOR.add(VECTOR)) {
             Location LOCATION = new Location(WORLD, POINT1_VECTOR.getBlockX(), POINT1_VECTOR.getBlockY(), POINT1_VECTOR.getBlockZ());
             if(!LOCATION.getBlock().isEmpty()) {
-                if(!VISUAL) this.STRENGTH_SURCHARGE+=DISTANCE-LENGHT;
+                if(VISUAL){
+                    WORLD.spawnParticle(
+                            Particle.CAMPFIRE_COSY_SMOKE, LOCATION,
+                            1, 0, 0, 0, 0.005
+                    );
+                    WORLD.spawnParticle(
+                            Particle.LAVA, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            1, 0, 0, 0, 0.05
+                    );
+                } else {
+                    this.STRENGTH_SURCHARGE+=DISTANCE-LENGHT;
+                }
                 return false;
             }
             if(VISUAL) {
-                WORLD.spawnParticle(
-                        Particle.LAVA, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
-                        2, 0, 0, 0, 0.005
-                );
-                WORLD.spawnParticle(
-                        Particle.FLAME, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
-                        1, 0, 0, 0, 0.005
-                );
+                if(SHRAPNEL) {
+                    WORLD.spawnParticle(
+                            Particle.FLAME, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            1, 0, 0, 0, 0.05
+                    );
+                }
+                if(SMOKE) {
+                    WORLD.spawnParticle(
+                            Particle.SMOKE_LARGE, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            1, 0, 0, 0, 0.05
+                    );
+                }
             }
             LENGHT+=0.1;
         }
         return true;
     }
+    private void spawnParticle(Particle PARTICLE, Location LOCATION, double EXTRA) {
+        World WORLD = this.LOCATION.getWorld();
+        assert WORLD != null;
+    }
 }
-//public void draw(Location POINT, World WORLD, boolean CALCULATE) {
-//        double DISTANCE = this.LOCATION.distance(POINT);
-//        if(this.SURCHARGE_AMOUNT != 0 && this.STRENGTH_SURCHARGE != 0) {
-//            DISTANCE+=this.STRENGTH_SURCHARGE/this.SURCHARGE_AMOUNT;
-//        }
-//        Vector POINT1_VECTOR = this.LOCATION.toVector();
-//        Vector POINT2_VECTOR = POINT.toVector();
-//        Vector VECTOR = POINT2_VECTOR.clone().subtract(POINT1_VECTOR).normalize().multiply(0.1);
-//        double LENGHT = 0;
-//        for(;LENGHT < DISTANCE;POINT1_VECTOR.add(VECTOR)) {
-//            Location LOCATION = new Location(WORLD, POINT1_VECTOR.getBlockX(), POINT1_VECTOR.getBlockY(), POINT1_VECTOR.getBlockZ());
-//            if(!LOCATION.getBlock().isEmpty()) {
-//                if(CALCULATE) this.STRENGTH_SURCHARGE+=DISTANCE-LENGHT;
-//                return;
-//            }
-//            LENGHT+=0.1;
-//        }
-//        this.SURCHARGE_AMOUNT++;
-//    }
-
-//WORLD.spawnParticle(
-//                    Particle.FLAME, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
-//                    1, 0, 0, 0, 0.005
-//            );
