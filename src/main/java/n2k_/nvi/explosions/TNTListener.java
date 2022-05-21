@@ -1,6 +1,7 @@
 package n2k_.nvi.explosions;
 import n2k_.nvi.base.APlugin;
 import n2k_.nvi.base.APresenter;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -15,7 +16,9 @@ public class TNTListener extends APresenter implements Listener {
     }
     @EventHandler
     public void onTntExplosion(@NotNull EntityExplodeEvent EVENT) {
-        new BlastWave(EVENT.getLocation(), 10, super.getPlugin()).start();
-        new ExplosiveFlow(EVENT.getLocation(), 5).start();
+        Bukkit.getScheduler().runTaskLaterAsynchronously(super.getPlugin(), () -> {
+            new BlastWave(EVENT.getLocation(), 10, super.getPlugin()).start();
+            new ExplosiveLine(EVENT.getLocation(), 6).start();
+        }, 1L);
     }
 }
