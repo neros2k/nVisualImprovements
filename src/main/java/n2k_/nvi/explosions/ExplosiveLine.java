@@ -37,7 +37,8 @@ public class ExplosiveLine {
         Random RANDOM = new Random();
         double DISTANCE = this.LOCATION.distance(POINT);
         if(VISUAL && this.SURCHARGE_AMOUNT != 0 && this.STRENGTH_SURCHARGE != 0) {
-            DISTANCE+=(this.STRENGTH_SURCHARGE/this.SURCHARGE_AMOUNT)/20.5;
+            DISTANCE+=((this.STRENGTH_SURCHARGE/this.SURCHARGE_AMOUNT)/20.5)+RANDOM.nextInt(5)
+                                                                            -RANDOM.nextInt(5);
         }
         Vector POINT1_VECTOR = this.LOCATION.toVector();
         Vector POINT2_VECTOR = POINT.toVector();
@@ -48,10 +49,10 @@ public class ExplosiveLine {
         if(VISUAL) {
             if(RANDOM.nextInt(100) > 70) {
                 SMOKE = true;
-                DISTANCE/=2;
-            } else if(RANDOM.nextInt(100) > 60) {
+                DISTANCE/=1.5+RANDOM.nextInt(2);
+            } else if(RANDOM.nextInt(100) > 80) {
                 SHRAPNEL = true;
-                DISTANCE*=2;
+                DISTANCE*=2-RANDOM.nextInt(5);
             }
         }
         for(;LENGHT < DISTANCE;POINT1_VECTOR.add(VECTOR)) {
@@ -60,7 +61,7 @@ public class ExplosiveLine {
                 if(VISUAL){
                     WORLD.spawnParticle(
                             Particle.CAMPFIRE_COSY_SMOKE, LOCATION,
-                            1, 0, 0, 0, 0.005
+                            1, 0, 0, 0, 0.05
                     );
                     WORLD.spawnParticle(
                             Particle.LAVA, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
@@ -75,12 +76,64 @@ public class ExplosiveLine {
                 if(SHRAPNEL) {
                     WORLD.spawnParticle(
                             Particle.FLAME, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
-                            1, 0, 0, 0, 0.05
+                            1, 0, 0, 0, 0.005
                     );
                 }
                 if(SMOKE) {
                     WORLD.spawnParticle(
                             Particle.SMOKE_LARGE, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            1, 0, 0, 0, 0.005
+                    );
+                    if(RANDOM.nextInt(140) > 130) {
+                        WORLD.spawnParticle(
+                                Particle.CAMPFIRE_COSY_SMOKE, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                                1, 0, 0, 0, 0.005
+                        );
+                    }
+                }
+                if(RANDOM.nextInt(100) > 70) {
+                    WORLD.spawnParticle(
+                            Particle.FLAME, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            1, 0, 0, 0, 0.005
+                    );
+                }
+                if(RANDOM.nextInt(150) > 130) {
+                    WORLD.spawnParticle(
+                            Particle.SMOKE_NORMAL, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            1, 0, 0, 0, 0.005
+                    );
+                }
+                if(DISTANCE < DISTANCE/((40-RANDOM.nextDouble(10))/10) && RANDOM.nextInt(100) > 40) {
+                    WORLD.spawnParticle(
+                            Particle.FLAME, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            1, 0, 0, 0, 0.005
+                    );
+                    WORLD.spawnParticle(
+                            Particle.LAVA, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            1, 0, 0, 0, 0.05
+                    );
+                    if(RANDOM.nextInt(140) > 130) {
+                        WORLD.spawnParticle(
+                                Particle.CAMPFIRE_COSY_SMOKE, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                                1, 0, 0, 0, 0.5
+                        );
+                    }
+                }
+                if(RANDOM.nextInt(300) > 270) {
+                    WORLD.spawnParticle(
+                            Particle.CAMPFIRE_COSY_SMOKE, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            1, 0, 0, 0, 0.05
+                    );
+                }
+                if(RANDOM.nextInt(300) > 298) {
+                    WORLD.spawnParticle(
+                            Particle.CLOUD, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            1, 0, 0, 0, 0.05
+                    );
+                }
+                if(RANDOM.nextInt(170) > 150) {
+                    WORLD.spawnParticle(
+                            Particle.LAVA, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
                             1, 0, 0, 0, 0.05
                     );
                 }
