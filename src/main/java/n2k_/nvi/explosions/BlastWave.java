@@ -12,12 +12,14 @@ import java.util.Random;
 public class BlastWave {
     private final Location LOCATION;
     private final int RADIUS;
-    public BlastWave(Location LOCATION, int RADIUS) {
+    private final APlugin PLUGIN;
+    public BlastWave(Location LOCATION, int RADIUS, APlugin PLUGIN) {
         this.LOCATION = LOCATION;
         this.RADIUS = RADIUS;
+        this.PLUGIN = PLUGIN;
     }
-    public void start(APlugin PLUGIN) {
-        Bukkit.getScheduler().runTaskAsynchronously(PLUGIN, () -> {
+    public void start() {
+        Bukkit.getScheduler().runTaskAsynchronously(this.PLUGIN, () -> {
             for(int I = 1;I<=this.RADIUS;I++) {
                 BlastWave.getSphere(this.LOCATION, I, true).forEach(LOCATION -> {
                     World WORLD = LOCATION.getWorld();

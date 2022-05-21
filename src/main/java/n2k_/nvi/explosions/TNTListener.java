@@ -15,6 +15,7 @@ public class TNTListener extends APresenter implements Listener {
     }
     @EventHandler
     public void onTntExplosion(@NotNull EntityExplodeEvent EVENT) {
-        new BlastWave(EVENT.getLocation(), 10).start(super.getPlugin());
+        new BlastWave(EVENT.getLocation(), 10, super.getPlugin()).start();
+        new ExplosiveFlow(EVENT.getLocation(), 5).start();
     }
 }
