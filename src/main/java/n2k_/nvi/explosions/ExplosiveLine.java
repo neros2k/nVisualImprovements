@@ -1,17 +1,22 @@
 package n2k_.nvi.explosions;
+import n2k_.nvi.base.APlugin;
 import org.bukkit.*;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 public class ExplosiveLine {
     private final Location LOCATION;
     private final int RADIUS;
+    private final APlugin PLUGIN;
     private int SURCHARGE_AMOUNT;
     private double STRENGTH_SURCHARGE;
-    public ExplosiveLine(Location LOCATION, int RADIUS) {
+    public ExplosiveLine(Location LOCATION, int RADIUS, APlugin PLUGIN) {
         this.LOCATION = LOCATION;
         this.RADIUS = RADIUS;
+        this.PLUGIN = PLUGIN;
         this.SURCHARGE_AMOUNT = 0;
         this.STRENGTH_SURCHARGE = 0;
     }
@@ -19,21 +24,30 @@ public class ExplosiveLine {
         World WORLD = this.LOCATION.getWorld();
         assert WORLD != null;
         List<Location> POINT_LIST = BlastWave.getSphere(this.LOCATION, this.RADIUS, true);
-        this.check(POINT_LIST, WORLD).forEach(POINT -> {
-            this.draw(POINT, WORLD, true);
-        });
+        this.check(POINT_LIST, WORLD).forEach(POINT ->
+        Bukkit.getScheduler().runTaskAsynchronously(this.PLUGIN, () -> {
+            try {
+                this.draw(POINT, WORLD, true);
+            } catch(InterruptedException EXCEPTION) {
+                EXCEPTION.printStackTrace();
+            }
+        }));
     }
-    public List<Location> check(List<Location> POINT_LIST, World WORLD) {
+    public List<Location> check(@NotNull List<Location> POINT_LIST, World WORLD) {
         List<Location> CHECKED_POINT_LIST = new ArrayList<>();
         POINT_LIST.forEach(POINT -> {
-            if(this.draw(POINT, WORLD, false)) {
-                CHECKED_POINT_LIST.add(POINT);
-                this.SURCHARGE_AMOUNT++;
+            try {
+                if(this.draw(POINT, WORLD, false)) {
+                    CHECKED_POINT_LIST.add(POINT);
+                    this.SURCHARGE_AMOUNT++;
+                }
+            } catch(InterruptedException EXCEPTION) {
+                EXCEPTION.printStackTrace();
             }
         });
         return CHECKED_POINT_LIST;
     }
-    public boolean draw(Location POINT, World WORLD, boolean VISUAL) {
+    public boolean draw(Location POINT, World WORLD, boolean VISUAL) throws InterruptedException {
         Random RANDOM = new Random();
         double DISTANCE = this.LOCATION.distance(POINT);
         if(VISUAL && this.SURCHARGE_AMOUNT != 0 && this.STRENGTH_SURCHARGE != 0) {
@@ -139,11 +153,8 @@ public class ExplosiveLine {
                 }
             }
             LENGHT+=0.1;
+            if(VISUAL) Thread.sleep(2L);
         }
         return true;
-    }
-    private void spawnParticle(Particle PARTICLE, Location LOCATION, double EXTRA) {
-        World WORLD = this.LOCATION.getWorld();
-        assert WORLD != null;
     }
 }
