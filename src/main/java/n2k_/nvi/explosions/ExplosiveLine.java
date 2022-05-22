@@ -102,9 +102,7 @@ public class ExplosiveLine {
                             Particle.LAVA, LOCATION_VECTOR.getX(), LOCATION_VECTOR.getY(), LOCATION_VECTOR.getZ(),
                             1, 0, 0, 0, 0.05
                     );
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(PLUGIN, () ->
-                            WORLD.playSound(LOCATION, Sound.ENTITY_FIREWORK_ROCKET_TWINKLE, RANDOM.nextInt(5), 1),
-                            RANDOM.nextInt(5));
+
                 } else {
                     this.STRENGTH_SURCHARGE+=DISTANCE-LENGTH;
                 }
@@ -129,10 +127,38 @@ public class ExplosiveLine {
                             BLOCK.breakNaturally();
                             this.EXPLODE_LIST.remove(BLOCK);
                         });
+                        if(RANDOM.nextInt(100) > 90) {
+                            if(RANDOM.nextInt(100) > 95) {
+                                if(RANDOM.nextBoolean()) {
+                                    Bukkit.getScheduler().runTaskLaterAsynchronously(PLUGIN, () ->
+                                                    WORLD.playSound(LOCATION, Sound.ENTITY_FIREWORK_ROCKET_TWINKLE, 1, 1),
+                                            RANDOM.nextInt(10));
+                                } else {
+                                    Bukkit.getScheduler().runTaskLaterAsynchronously(PLUGIN, () ->
+                                                    WORLD.playSound(LOCATION, Sound.ENTITY_FIREWORK_ROCKET_TWINKLE_FAR, 1, 1),
+                                            RANDOM.nextInt(10));
+                                }
+                            } else {
+                                Bukkit.getScheduler().runTaskLaterAsynchronously(PLUGIN, () ->
+                                                WORLD.playSound(LOCATION, Sound.ENTITY_FIREWORK_ROCKET_BLAST, RANDOM.nextInt(1), 1),
+                                        RANDOM.nextInt(5));
+                            }
+                        }
                     } else {
-                        return true;
+                        return RANDOM.nextInt(100) < 90;
                     }
                 } else {
+                    if(VISUAL && RANDOM.nextInt(100) > 60) {
+                        if(RANDOM.nextBoolean()) {
+                            Bukkit.getScheduler().runTaskLaterAsynchronously(PLUGIN, () ->
+                                            WORLD.playSound(LOCATION, Sound.ENTITY_FIREWORK_ROCKET_TWINKLE, 1, 1),
+                                    RANDOM.nextInt(10));
+                        } else {
+                            Bukkit.getScheduler().runTaskLaterAsynchronously(PLUGIN, () ->
+                                            WORLD.playSound(LOCATION, Sound.ENTITY_FIREWORK_ROCKET_TWINKLE_FAR, 1, 1),
+                                    RANDOM.nextInt(10));
+                        }
+                    }
                     return false;
                 }
             }
