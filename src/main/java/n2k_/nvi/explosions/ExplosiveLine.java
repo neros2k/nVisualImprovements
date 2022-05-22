@@ -36,6 +36,9 @@ public class ExplosiveLine {
                     EXCEPTION.printStackTrace();
                 }
         }));
+        Bukkit.getScheduler().runTaskLater(PLUGIN, () ->
+                this.EXPLODE_LIST.forEach(Block::breakNaturally),
+                6L);
     }
     public List<Location> check(@NotNull List<Location> POINT_LIST, World WORLD) {
         List<Location> CHECKED_POINT_LIST = new ArrayList<>();
@@ -124,11 +127,14 @@ public class ExplosiveLine {
                                 return;
                             }
                             BLOCK.breakNaturally();
+                            this.EXPLODE_LIST.remove(BLOCK);
                         });
+                    } else {
+                        return true;
                     }
-                    return true;
+                } else {
+                    return false;
                 }
-                return false;
             }
             if(VISUAL) {
                 if(SHRAPNEL) {
