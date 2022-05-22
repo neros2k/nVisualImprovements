@@ -229,7 +229,13 @@ public class ExplosiveLine {
                 }
             }
             LENGTH+=0.1;
-            if(VISUAL) Thread.sleep(3L);
+            if(VISUAL) {
+                if(SHRAPNEL) {
+                    Thread.sleep(4L);
+                } else {
+                    Thread.sleep(3L);
+                }
+            }
         }
         return true;
     }

@@ -16,7 +16,7 @@ public class ExplodeListener extends APresenter implements Listener {
     @EventHandler
     public void onExplosion(@NotNull EntityExplodeEvent EVENT) {
         EVENT.setCancelled(true);
-        new BlastWave(EVENT.getLocation(), 10, super.getPlugin()).start();
+        new BlastWave(EVENT.getLocation(), 15, super.getPlugin()).start();
         new ExplosiveLine(EVENT.getLocation(), 5, super.getPlugin(), EVENT.blockList()).start();
     }
 }
