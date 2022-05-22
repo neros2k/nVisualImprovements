@@ -54,9 +54,9 @@ public class ExplosiveLine {
             DISTANCE+=((this.STRENGTH_SURCHARGE/this.SURCHARGE_AMOUNT)/20.5)+RANDOM.nextInt(5)
                                                                             -RANDOM.nextInt(5);
         }
-        Vector POINT1_VECTOR = this.LOCATION.toVector();
-        Vector POINT2_VECTOR = POINT.toVector();
-        Vector VECTOR = POINT2_VECTOR.clone().subtract(POINT1_VECTOR).normalize().multiply(0.1);
+        Vector LOCATION_VECTOR = this.LOCATION.toVector();
+        Vector POINT_VECTOR = POINT.toVector();
+        Vector VECTOR = POINT_VECTOR.clone().subtract(LOCATION_VECTOR).normalize().multiply(0.1);
         double LENGHT = 0;
         boolean SHRAPNEL = false;
         boolean SMOKE = false;
@@ -64,13 +64,27 @@ public class ExplosiveLine {
             if(RANDOM.nextInt(100) > 70) {
                 SMOKE = true;
                 DISTANCE/=1.5+RANDOM.nextInt(2);
+                if(RANDOM.nextBoolean()) {
+                    Bukkit.getScheduler().runTaskLaterAsynchronously(PLUGIN, () ->
+                            WORLD.playSound(LOCATION, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 10, 1),
+                            RANDOM.nextInt(3));
+                } else {
+                    Bukkit.getScheduler().runTaskLaterAsynchronously(PLUGIN, () ->
+                            WORLD.playSound(LOCATION, Sound.ENTITY_FIREWORK_ROCKET_BLAST_FAR, 10, 1),
+                            RANDOM.nextInt(3));
+                }
             } else if(RANDOM.nextInt(100) > 80) {
                 SHRAPNEL = true;
                 DISTANCE*=2-RANDOM.nextInt(5);
+                if(RANDOM.nextInt(100) > 90) {
+                    Bukkit.getScheduler().runTaskLaterAsynchronously(PLUGIN, () ->
+                            WORLD.playSound(LOCATION, Sound.ENTITY_FIREWORK_ROCKET_TWINKLE, RANDOM.nextInt(5), 1),
+                            RANDOM.nextInt(10));
+                }
             }
         }
-        for(;LENGHT < DISTANCE;POINT1_VECTOR.add(VECTOR)) {
-            Location LOCATION = new Location(WORLD, POINT1_VECTOR.getBlockX(), POINT1_VECTOR.getBlockY(), POINT1_VECTOR.getBlockZ());
+        for(;LENGHT < DISTANCE;LOCATION_VECTOR.add(VECTOR)) {
+            Location LOCATION = new Location(WORLD, LOCATION_VECTOR.getBlockX(), LOCATION_VECTOR.getBlockY(), LOCATION_VECTOR.getBlockZ());
             if(!LOCATION.getBlock().isEmpty()) {
                 if(VISUAL){
                     WORLD.spawnParticle(
@@ -78,9 +92,12 @@ public class ExplosiveLine {
                             1, 0, 0, 0, 0.05
                     );
                     WORLD.spawnParticle(
-                            Particle.LAVA, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            Particle.LAVA, LOCATION_VECTOR.getX(), LOCATION_VECTOR.getY(), LOCATION_VECTOR.getZ(),
                             1, 0, 0, 0, 0.05
                     );
+                    Bukkit.getScheduler().runTaskLaterAsynchronously(PLUGIN, () ->
+                            WORLD.playSound(LOCATION, Sound.ENTITY_FIREWORK_ROCKET_TWINKLE, RANDOM.nextInt(5), 1),
+                            RANDOM.nextInt(5));
                 } else {
                     this.STRENGTH_SURCHARGE+=DISTANCE-LENGHT;
                 }
@@ -89,71 +106,71 @@ public class ExplosiveLine {
             if(VISUAL) {
                 if(SHRAPNEL) {
                     WORLD.spawnParticle(
-                            Particle.FLAME, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            Particle.FLAME, LOCATION_VECTOR.getX(), LOCATION_VECTOR.getY(), LOCATION_VECTOR.getZ(),
                             1, 0, 0, 0, 0.005
                     );
                 }
                 if(SMOKE) {
                     WORLD.spawnParticle(
-                            Particle.SMOKE_LARGE, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            Particle.SMOKE_LARGE, LOCATION_VECTOR.getX(), LOCATION_VECTOR.getY(), LOCATION_VECTOR.getZ(),
                             1, 0, 0, 0, 0.005
                     );
                     if(RANDOM.nextInt(140) > 130) {
                         WORLD.spawnParticle(
-                                Particle.CAMPFIRE_COSY_SMOKE, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                                Particle.CAMPFIRE_COSY_SMOKE, LOCATION_VECTOR.getX(), LOCATION_VECTOR.getY(), LOCATION_VECTOR.getZ(),
                                 1, 0, 0, 0, 0.005
                         );
                     }
                 }
                 if(RANDOM.nextInt(100) > 70) {
                     WORLD.spawnParticle(
-                            Particle.FLAME, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            Particle.FLAME, LOCATION_VECTOR.getX(), LOCATION_VECTOR.getY(), LOCATION_VECTOR.getZ(),
                             1, 0, 0, 0, 0.005
                     );
                 }
                 if(RANDOM.nextInt(150) > 130) {
                     WORLD.spawnParticle(
-                            Particle.SMOKE_NORMAL, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            Particle.SMOKE_NORMAL, LOCATION_VECTOR.getX(), LOCATION_VECTOR.getY(), LOCATION_VECTOR.getZ(),
                             1, 0, 0, 0, 0.005
                     );
                 }
                 if(DISTANCE < DISTANCE/((40-RANDOM.nextDouble(10))/10) && RANDOM.nextInt(100) > 40) {
                     WORLD.spawnParticle(
-                            Particle.FLAME, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            Particle.FLAME, LOCATION_VECTOR.getX(), LOCATION_VECTOR.getY(), LOCATION_VECTOR.getZ(),
                             1, 0, 0, 0, 0.005
                     );
                     WORLD.spawnParticle(
-                            Particle.LAVA, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            Particle.LAVA, LOCATION_VECTOR.getX(), LOCATION_VECTOR.getY(), LOCATION_VECTOR.getZ(),
                             1, 0, 0, 0, 0.05
                     );
                     if(RANDOM.nextInt(140) > 130) {
                         WORLD.spawnParticle(
-                                Particle.CAMPFIRE_COSY_SMOKE, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                                Particle.CAMPFIRE_COSY_SMOKE, LOCATION_VECTOR.getX(), LOCATION_VECTOR.getY(), LOCATION_VECTOR.getZ(),
                                 1, 0, 0, 0, 0.5
                         );
                     }
                 }
                 if(RANDOM.nextInt(300) > 270) {
                     WORLD.spawnParticle(
-                            Particle.CAMPFIRE_COSY_SMOKE, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            Particle.CAMPFIRE_COSY_SMOKE, LOCATION_VECTOR.getX(), LOCATION_VECTOR.getY(), LOCATION_VECTOR.getZ(),
                             1, 0, 0, 0, 0.05
                     );
                 }
                 if(RANDOM.nextInt(300) > 298) {
                     WORLD.spawnParticle(
-                            Particle.CLOUD, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            Particle.CLOUD, LOCATION_VECTOR.getX(), LOCATION_VECTOR.getY(), LOCATION_VECTOR.getZ(),
                             1, 0, 0, 0, 0.05
                     );
                 }
                 if(RANDOM.nextInt(170) > 150) {
                     WORLD.spawnParticle(
-                            Particle.LAVA, POINT1_VECTOR.getX(), POINT1_VECTOR.getY(), POINT1_VECTOR.getZ(),
+                            Particle.LAVA, LOCATION_VECTOR.getX(), LOCATION_VECTOR.getY(), LOCATION_VECTOR.getZ(),
                             1, 0, 0, 0, 0.05
                     );
                 }
             }
             LENGHT+=0.1;
-            if(VISUAL) Thread.sleep(2L);
+            if(VISUAL) Thread.sleep(3);
         }
         return true;
     }
