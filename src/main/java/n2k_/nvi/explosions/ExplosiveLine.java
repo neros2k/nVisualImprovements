@@ -1,9 +1,9 @@
 package n2k_.nvi.explosions;
 import n2k_.nvi.base.APlugin;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -11,12 +11,14 @@ public class ExplosiveLine {
     private final Location LOCATION;
     private final int RADIUS;
     private final APlugin PLUGIN;
+    private final List<Block> EXPLODE_LIST;
     private int SURCHARGE_AMOUNT;
     private double STRENGTH_SURCHARGE;
-    public ExplosiveLine(Location LOCATION, int RADIUS, APlugin PLUGIN) {
+    public ExplosiveLine(Location LOCATION, int RADIUS, APlugin PLUGIN, List<Block> EXPLODE_LIST) {
         this.LOCATION = LOCATION;
         this.RADIUS = RADIUS;
         this.PLUGIN = PLUGIN;
+        this.EXPLODE_LIST = EXPLODE_LIST;
         this.SURCHARGE_AMOUNT = 0;
         this.STRENGTH_SURCHARGE = 0;
     }
@@ -25,12 +27,12 @@ public class ExplosiveLine {
         assert WORLD != null;
         List<Location> POINT_LIST = BlastWave.getSphere(this.LOCATION, this.RADIUS, true);
         this.check(POINT_LIST, WORLD).forEach(POINT ->
-        Bukkit.getScheduler().runTaskAsynchronously(this.PLUGIN, () -> {
-            try {
-                this.draw(POINT, WORLD, true);
-            } catch(InterruptedException EXCEPTION) {
-                EXCEPTION.printStackTrace();
-            }
+            Bukkit.getScheduler().runTaskAsynchronously(PLUGIN, () -> {
+                try {
+                    this.draw(POINT, WORLD, true);
+                } catch(InterruptedException EXCEPTION) {
+                    EXCEPTION.printStackTrace();
+                }
         }));
     }
     public List<Location> check(@NotNull List<Location> POINT_LIST, World WORLD) {
@@ -57,7 +59,7 @@ public class ExplosiveLine {
         Vector LOCATION_VECTOR = this.LOCATION.toVector();
         Vector POINT_VECTOR = POINT.toVector();
         Vector VECTOR = POINT_VECTOR.clone().subtract(LOCATION_VECTOR).normalize().multiply(0.1);
-        double LENGHT = 0;
+        double LENGTH = 0;
         boolean SHRAPNEL = false;
         boolean SMOKE = false;
         if(VISUAL) {
@@ -83,7 +85,7 @@ public class ExplosiveLine {
                 }
             }
         }
-        for(;LENGHT < DISTANCE;LOCATION_VECTOR.add(VECTOR)) {
+        for(;LENGTH < DISTANCE;LOCATION_VECTOR.add(VECTOR)) {
             Location LOCATION = new Location(WORLD, LOCATION_VECTOR.getBlockX(), LOCATION_VECTOR.getBlockY(), LOCATION_VECTOR.getBlockZ());
             if(!LOCATION.getBlock().isEmpty()) {
                 if(VISUAL){
@@ -99,7 +101,17 @@ public class ExplosiveLine {
                             WORLD.playSound(LOCATION, Sound.ENTITY_FIREWORK_ROCKET_TWINKLE, RANDOM.nextInt(5), 1),
                             RANDOM.nextInt(5));
                 } else {
-                    this.STRENGTH_SURCHARGE+=DISTANCE-LENGHT;
+                    this.STRENGTH_SURCHARGE+=DISTANCE-LENGTH;
+                }
+                if(this.EXPLODE_LIST.contains(LOCATION.getBlock())) {
+                    if(VISUAL) {
+                        Bukkit.getScheduler().runTask(PLUGIN, () -> {
+                            World SYNC_WORLD = Bukkit.getWorld(WORLD.getName());
+                            assert SYNC_WORLD != null;
+                            SYNC_WORLD.getBlockAt(LOCATION).breakNaturally();
+                        });
+                    }
+                    return true;
                 }
                 return false;
             }
@@ -169,8 +181,8 @@ public class ExplosiveLine {
                     );
                 }
             }
-            LENGHT+=0.1;
-            if(VISUAL) Thread.sleep(3);
+            LENGTH+=0.1;
+            if(VISUAL) Thread.sleep(20L);
         }
         return true;
     }
