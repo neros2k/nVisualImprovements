@@ -2,6 +2,8 @@ package n2k_.nvi.explosions;
 import n2k_.nvi.base.APlugin;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
@@ -108,7 +110,20 @@ public class ExplosiveLine {
                         Bukkit.getScheduler().runTask(PLUGIN, () -> {
                             World SYNC_WORLD = Bukkit.getWorld(WORLD.getName());
                             assert SYNC_WORLD != null;
-                            SYNC_WORLD.getBlockAt(LOCATION).breakNaturally();
+                            Block BLOCK = SYNC_WORLD.getBlockAt(LOCATION);
+                            if(BLOCK.getType() == Material.TNT) {
+                                BLOCK.setType(Material.AIR);
+                                int FUSE;
+                                int TNT_DISTANCE = (int) this.LOCATION.distance(BLOCK.getLocation());
+                                if(TNT_DISTANCE<=1) {
+                                    FUSE = 0;
+                                } else {
+                                    FUSE = TNT_DISTANCE*RANDOM.nextInt(5);
+                                }
+                                ((TNTPrimed) WORLD.spawnEntity(BLOCK.getLocation(), EntityType.PRIMED_TNT)).setFuseTicks(FUSE);
+                                return;
+                            }
+                            BLOCK.breakNaturally();
                         });
                     }
                     return true;
@@ -182,7 +197,7 @@ public class ExplosiveLine {
                 }
             }
             LENGTH+=0.1;
-            if(VISUAL) Thread.sleep(20L);
+            if(VISUAL) Thread.sleep(3L);
         }
         return true;
     }
