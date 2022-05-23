@@ -230,11 +230,9 @@ public class ExplosiveLine {
             }
             LENGTH+=0.1;
             if(VISUAL) {
-                if(SHRAPNEL) {
-                    Thread.sleep(4L);
-                } else {
-                    Thread.sleep(3L);
-                }
+                long SLEEP_TIME = 3L;
+                if(SHRAPNEL) SLEEP_TIME*=1.3;
+                Thread.sleep(SLEEP_TIME);
             }
         }
         return true;
